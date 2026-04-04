@@ -1,0 +1,432 @@
+\documentclass[12pt]{article}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{tcolorbox}
+
+\geometry{margin=2.5cm}
+
+% Estilo código C++
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{green!40!black},
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    frame=single,
+    showstringspaces=false
+}
+
+% Caja para respuestas
+\newtcolorbox{respuesta}{
+colback=gray!5,
+colframe=black!40,
+title=Respuesta,
+}
+
+\begin{document}
+
+% ---------------- PORTADA ----------------
+
+\begin{titlepage}
+
+\centering
+
+\vspace*{2cm}
+
+{\Large \textbf{UNIVERSIDAD EAFIT}}
+
+\vspace{0.5cm}
+
+{\large Ingeniería de Sistemas}
+
+\vspace{0.5cm}
+
+{\large Análisis y Diseño de Algoritmos}
+
+\vspace{2cm}
+
+{\Huge \textbf{PRIMER TRABAJO PRÁCTICO}}
+
+\vspace{0.5cm}
+
+{\Large Fuerza Bruta y Backtracking en C++}
+
+\vspace{3cm}
+
+\begin{flushleft}
+
+\textbf{Integrantes:} Sebastian Salazar, Andres Velez y Nathalia Cardoza. \\
+
+\vspace{0.3cm}
+
+\textbf{Profesor:} Carlos Alberto Alvarez Henao. \\
+
+\vspace{0.3cm}
+
+\textbf{Fecha:} 5 de Abril de 2026 \\
+
+\end{flushleft}
+
+\vfill
+
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+
+% ---------------- INTRO ----------------
+
+\section{Introducción}
+
+En este trabajo se analizan e implementan dos problemas clásicos utilizando los enfoques de \textbf{fuerza bruta} y \textbf{backtracking}. El objetivo principal es comprender las diferencias entre ambos métodos en términos de eficiencia, complejidad y aplicabilidad en problemas combinatorios.
+
+El primer ejercicio consiste en generar permutaciones con restricciones, mientras que el segundo aborda el problema de coloración de grafos con $k$ colores.
+
+El desarrollo incluye pseudocódigo, implementación en C++, análisis de complejidad y comparación experimental entre ambos enfoques.
+
+% ---------------- TEORIA ----------------
+
+\section{Conceptos Teóricos}
+
+\subsection{Fuerza Bruta}
+
+La fuerza bruta consiste en evaluar todas las posibles soluciones hasta encontrar aquellas que cumplen las condiciones del problema.
+
+Características:
+
+\begin{itemize}
+\item Explora todo el espacio de búsqueda
+\item Garantiza encontrar la solución
+\item Puede ser costoso computacionalmente
+\end{itemize}
+
+\subsection{Backtracking}
+
+El backtracking mejora la fuerza bruta al descartar soluciones inválidas de manera anticipada.
+
+Características:
+
+\begin{itemize}
+\item Utiliza recursividad
+\item Reduce el número de combinaciones exploradas
+\item Aplica poda en el árbol de búsqueda
+\end{itemize}
+
+\subsection{Diferencias}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Método & Explora todo & Usa poda \\
+\hline
+Fuerza bruta & Sí & No \\
+Backtracking & No & Sí \\
+\hline
+\end{tabular}
+\end{center}
+
+% ---------------- EJERCICIO 1 ----------------
+
+\section{Ejercicio 1: Permutaciones con Restricción}
+
+\subsection{Descripción}
+
+Dado un conjunto de enteros distintos, se deben generar todas las permutaciones posibles que cumplan:
+
+\begin{equation}
+P[i] \leq 2P[i+1]
+\end{equation}
+
+\subsection{Idea del algoritmo}
+
+Explicar con tus palabras cómo funciona.
+
+\begin{respuesta}
+
+Escribir explicación aquí.
+
+\end{respuesta}
+
+\subsection{Por qué es fuerza bruta}
+
+\begin{respuesta}
+
+Explicar por qué evalúa todas las permutaciones.
+
+\end{respuesta}
+
+\subsection{Pseudocódigo}
+
+\begin{verbatim}
+leer n
+leer arreglo
+
+ordenar arreglo
+
+hacer todas las permutaciones
+
+verificar restriccion
+
+contar validas
+\end{verbatim}
+
+\subsection{Implementación en C++}
+
+\begin{lstlisting}
+// pegar codigo ejercicio 1
+\end{lstlisting}
+
+\subsection{Ejemplo}
+
+Entrada:
+
+\begin{verbatim}
+3
+1 3 4
+\end{verbatim}
+
+Salida esperada:
+
+\begin{verbatim}
+Permutaciones validas:
+...
+
+Total generadas = 6
+Total validas = 3
+\end{verbatim}
+
+\subsection{Complejidad}
+
+\begin{respuesta}
+
+Tiempo:
+
+O(n!)
+
+porque se generan todas las permutaciones posibles.
+
+Espacio:
+
+O(n)
+
+\end{respuesta}
+
+\subsection{Tabla de tiempos}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+n & tiempo (ms) \\
+\hline
+6 & \\
+8 & \\
+10 & \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Preguntas guía}
+
+\textbf{¿Qué ocurre con la proporción de permutaciones válidas cuando crece n?}
+
+\begin{respuesta}
+
+Escribir respuesta.
+
+\end{respuesta}
+
+\textbf{¿Dónde se podría aplicar poda con backtracking?}
+
+\begin{respuesta}
+
+Escribir respuesta.
+
+\end{respuesta}
+
+\textbf{¿Por qué next\_permutation genera n! permutaciones?}
+
+\begin{respuesta}
+
+Escribir respuesta.
+
+\end{respuesta}
+
+% ---------------- EJERCICIO 2 ----------------
+
+\section{Ejercicio 2: Coloración de Grafos}
+
+\subsection{Descripción}
+
+Se desea asignar colores a los vértices de un grafo sin que vértices adyacentes tengan el mismo color.
+
+\subsection{Idea del algoritmo}
+
+\begin{respuesta}
+
+Explicar lógica del backtracking.
+
+\end{respuesta}
+
+\subsection{Pseudocódigo}
+
+\begin{verbatim}
+asignar color a cada nodo
+
+si hay conflicto:
+    probar otro color
+
+si no hay colores posibles:
+    volver atras
+\end{verbatim}
+
+\subsection{Implementación Backtracking}
+
+\begin{lstlisting}
+// pegar codigo backtracking
+\end{lstlisting}
+
+\subsection{Implementación Fuerza Bruta}
+
+\begin{lstlisting}
+// pegar codigo fuerza bruta
+\end{lstlisting}
+
+\subsection{Ejemplo}
+
+Entrada:
+
+\begin{verbatim}
+n = 4
+k = 3
+\end{verbatim}
+
+Salida:
+
+\begin{verbatim}
+Total soluciones = 18
+\end{verbatim}
+
+\subsection{Comparación}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Método & Complejidad \\
+\hline
+Fuerza bruta & O(k^n) \\
+Backtracking & menor o igual O(k^n) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Tabla de tiempos}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+grafo & fuerza bruta & backtracking \\
+\hline
+1 & & \\
+2 & & \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Complejidad}
+
+\begin{respuesta}
+
+Fuerza bruta:
+
+O(k^n)
+
+Backtracking:
+
+explora menos combinaciones.
+
+Espacio:
+
+O(n)
+
+\end{respuesta}
+
+\subsection{Preguntas guía}
+
+\textbf{¿Cuántos nodos explora cada método?}
+
+\begin{respuesta}
+
+Responder aquí.
+
+\end{respuesta}
+
+\textbf{¿Qué grafos benefician más al backtracking?}
+
+\begin{respuesta}
+
+Responder aquí.
+
+\end{respuesta}
+
+\textbf{¿Cómo saber solo si existe solución?}
+
+\begin{respuesta}
+
+Responder aquí.
+
+\end{respuesta}
+
+\textbf{Relación con número cromático}
+
+\begin{respuesta}
+
+Responder aquí.
+
+\end{respuesta}
+
+% ---------------- CONCLUSIONES ----------------
+
+\section{Conclusiones}
+
+\begin{respuesta}
+
+Escribir conclusiones:
+
+• diferencia entre fuerza bruta y backtracking
+
+• eficiencia
+
+• aprendizaje obtenido
+
+\end{respuesta}
+
+% ---------------- REFERENCIAS ----------------
+
+\section{Referencias}
+
+\begin{itemize}
+
+\item Material de clase
+
+\item Documentación C++
+
+\item Libro de algoritmos
+
+\item ChatGPT (si decides citarlo)
+
+\end{itemize}
+
+\end{document}
