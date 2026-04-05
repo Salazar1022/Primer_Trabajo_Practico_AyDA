@@ -7,7 +7,6 @@ Algoritmo pseudocodigo_permutaciones
     total_validas = 0;
     cont = 1;
 	n = 0;
-	valida = verdadero;
 	
     Imprimir "Por favor Ingrese de que tamaño desea el arreglo:";
     Leer n;
@@ -36,8 +35,8 @@ Algoritmo pseudocodigo_permutaciones
     FinPara
 	
     Repetir
+		valida = verdadero;
         total_generadas = total_generadas + 1;
-		valido = verdadero;
         Para i = 0 hasta n-2 Hacer
             Si A[i] > (2 * A[i+1]) Entonces
                 valida = Falso;

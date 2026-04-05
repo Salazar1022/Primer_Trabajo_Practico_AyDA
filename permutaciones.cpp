@@ -67,7 +67,7 @@ int main(){
             total_validas++;
         }
 
-    } while (next_permutation_test(A, A + n));
+    } while (next_permutation(A, A + n));
 
     // *** FIN DEL CRONÓMETRO ***
     auto fin = chrono::high_resolution_clock::now();
@@ -78,7 +78,7 @@ int main(){
     cout << "Total permutaciones posibles: " << factorial(n) << endl;
     cout << "Total permutaciones generadas: " << total_generadas << endl;
     cout << "Total permutaciones validas: " << total_validas << endl;
-    cout << duracion.count() << " ns" << endl;
+    cout << "Tiempo de ejecución: " << duracion.count() << " ns" << endl;
 
     return 0;
 }
