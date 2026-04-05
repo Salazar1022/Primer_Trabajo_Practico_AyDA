@@ -55,10 +55,6 @@
 
 \begin{document}
 
-% ==================== PORTADA ====================
-
-\begin{document}
-
 % --- Portada -------------------------------------------------------
 
 \begin{titlepage}
@@ -70,8 +66,8 @@
 
 
   \rule{\linewidth}{1.5pt}\\[0.4cm]
-  {\Huge \textbf{}Trabajo Practico 01}}\\[0.3cm]
-  {\LARGE \textbf{}Ejercicio 1: Permutaciones con\\ Restricciones (Fuerza Bruta)\par}
+  {\Huge \textbf{Trabajo Practico 01}}\\[0.3cm]
+  {\LARGE \textbf{Ejercicio 1: Permutaciones con\\ Restricciones (Fuerza Bruta)}\par}
   \rule{\linewidth}{1.5pt}\\[2cm]
 
   \begin{tabular}{ll}
@@ -151,6 +147,80 @@ Proceso paso a paso:
           consecutivos. Si algun par la viola, la permutacion se descarta con \texttt{break}.
     \item Al terminar, se reportan los totales y el listado de permutaciones validas.
 \end{enumerate}
+
+% ---- ADICION 1: Por que este enfoque es Fuerza Bruta y no Backtracking ----
+\subsection{Por que este enfoque es Fuerza Bruta y no Backtracking}
+
+Aunque ambos algoritmos resuelven el mismo problema y producen los mismos resultados,
+la diferencia fundamental radica en \textbf{cuando} se evalua la restriccion durante la
+construccion de cada permutacion.
+
+En la \textbf{fuerza bruta} implementada, la permutacion se construye \textit{completamente}
+antes de verificar si es valida. Es decir, se genera la permutacion entera de $n$ elementos
+y solo al final se recorren sus pares consecutivos para aceptarla o descartarla. En ningun
+momento se interrumpe la construccion anticipadamente: si los primeros dos elementos ya
+violan la restriccion, el algoritmo termina de armar la permutacion completa antes de
+detectarlo y descartarla.
+
+En el \textbf{backtracking}, en cambio, la verificacion ocurre \textit{durante} la
+construccion, posicion por posicion. Al colocar el elemento en la posicion $i$, se
+comprueba inmediatamente si viola la restriccion con el elemento en $i-1$. Si la viola,
+se \textbf{poda} la rama completa: no se exploran ninguna de las $(n-i-1)!$
+sub-permutaciones que se derivan de ese prefijo invalido.
+
+La clave definitoria es la \textbf{ausencia de poda}:
+
+\begin{itemize}
+    \item \textbf{Fuerza Bruta:} genera las $n!$ permutaciones sin excepcion, evalua
+          la restriccion \textit{a posteriori} sobre la permutacion completa.
+    \item \textbf{Backtracking:} construye parcialmente y poda \textit{a priori} las
+          ramas que no pueden llevar a soluciones validas.
+\end{itemize}
+
+Por tanto, aunque el codigo utilice \texttt{next\_permutation} (que internamente aplica
+un algoritmo de generacion lexicografica eficiente), la \textit{estrategia de busqueda}
+sigue siendo fuerza bruta: el espacio de busqueda explorado es siempre el total de las
+$n!$ permutaciones, sin ninguna reduccion anticipada basada en la restriccion del problema.
+
+% ---- ADICION 2: Por que se usa next_permutation y no un algoritmo propio ----
+\subsection{Justificacion del uso de \texttt{next\_permutation} de la STL}
+
+Para generar las permutaciones se utiliza la funcion \texttt{std::next\_permutation}
+de la biblioteca estandar de C++ (\texttt{<algorithm>}) en lugar de implementar un
+algoritmo propio. Esta decision se justifica por las siguientes razones:
+
+\begin{enumerate}
+    \item \textbf{Correccion garantizada.} La implementacion de la STL ha sido
+          ampliamente probada y verificada. Una implementacion propia del algoritmo de
+          generacion lexicografica (como la incluida en \texttt{next\_permutation\_test}
+          con fines educativos) puede introducir errores sutiles, por ejemplo en el
+          manejo de los indices de frontera o en la inversion del sufijo.
+
+    \item \textbf{Completitud del recorrido.} \texttt{next\_permutation} garantiza
+          recorrer exactamente las $n!$ permutaciones en orden lexicografico estricto,
+          sin repetir ni omitir ninguna, siempre que el arreglo de entrada este ordenado
+          ascendentemente al inicio del bucle. Esta propiedad es critica para que
+          \texttt{total\_generadas == n!} se cumpla como invariante de verificacion.
+
+    \item \textbf{Eficiencia.} El algoritmo interno opera en tiempo amortizado $O(n)$
+          por llamada, que es el optimo posible para generar la siguiente permutacion
+          en orden lexicografico. Otros enfoques, como generar todas las permutaciones
+          con recursion y almacenarlas en un vector, tendrian un costo de memoria
+          $O(n \cdot n!)$ que se vuelve prohibitivo para $n \geq 10$.
+
+    \item \textbf{Legibilidad.} El patron \texttt{do-while} con \texttt{next\_permutation}
+          expresa de forma directa la intencion del algoritmo (``recorrer todas las
+          permutaciones'') sin oscurecer la logica principal con detalles de
+          implementacion del generador.
+
+    \item \textbf{Portabilidad.} Al ser parte del estandar ISO de C++, la funcion
+          esta disponible en cualquier compilador compatible sin dependencias externas.
+\end{enumerate}
+
+La implementacion propia \texttt{next\_permutation\_test} se incluye en el codigo
+\textit{exclusivamente} con fines educativos, para evidenciar el mecanismo interno
+del algoritmo de generacion lexicografica. El bucle principal del programa usa la
+version de la STL por las razones expuestas.
 
 \subsection{Backtracking (referencia comparativa)}
 
