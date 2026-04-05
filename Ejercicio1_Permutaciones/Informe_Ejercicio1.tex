@@ -409,12 +409,11 @@ El conjunto del enunciado. Con tres elementos existen $3! = 6$ permutaciones. El
 =============================================
 Permutacion valida: 1 3 4
 Permutacion valida: 1 4 3
-Permutacion valida: 3 4 1
 =============================================
 Total permutaciones posibles:  6
 Total permutaciones generadas: 6
-Total permutaciones validas:   3
-Tiempo de ejecucion:           0.000009 segundos
+Total permutaciones validas:   2
+Tiempo de ejecucion:           0.0009147 segundos
 \end{verbatim}
 
 \textbf{Verificacion manual:}
@@ -451,7 +450,7 @@ Permutacion valida: 3 2 1
 Total permutaciones posibles:  6
 Total permutaciones generadas: 6
 Total permutaciones validas:   4
-Tiempo de ejecucion:           0.000008 segundos
+Tiempo de ejecucion:           0.0014084 segundos
 \end{verbatim}
 
 \subsection{Ejemplo 3 --- Conjunto \{1, 2, 3, 4\} (n=4)}
@@ -462,19 +461,23 @@ de validas baja al 33\%.
 \textbf{Salida real del programa:}
 \begin{verbatim}
 =============================================
-Permutacion valida: 1 2 3 4
-Permutacion valida: 1 2 4 3
-Permutacion valida: 1 3 2 4
-Permutacion valida: 1 4 3 2
-Permutacion valida: 2 1 3 4
-Permutacion valida: 2 3 4 1
-Permutacion valida: 3 2 1 4
-Permutacion valida: 4 3 2 1
+Permutación válida: 1 2 3 4
+Permutación válida: 1 2 4 3
+Permutación válida: 1 3 2 4
+Permutación válida: 1 3 4 2
+Permutación válida: 1 4 2 3
+Permutación válida: 1 4 3 2
+Permutación válida: 2 1 3 4
+Permutación válida: 2 1 4 3
+Permutación válida: 3 2 1 4
+Permutación válida: 3 4 2 1
+Permutación válida: 4 2 1 3
+Permutación válida: 4 3 2 1
 =============================================
 Total permutaciones posibles:  24
 Total permutaciones generadas: 24
-Total permutaciones validas:   8
-Tiempo de ejecucion:           0.000031 segundos
+Total permutaciones validas:   12
+Tiempo de ejecucion:           0.0042051 segundos
 \end{verbatim}
 
 \subsection{Ejemplo 4 --- Conjunto \{1, 5, 20\} (n=3) --- Elementos alejados}
@@ -486,12 +489,11 @@ de validas. Con elementos muy separados la restriccion es muy estricta.
 \begin{verbatim}
 =============================================
 Permutacion valida: 1 5 20
-Permutacion valida: 1 20 5
 =============================================
 Total permutaciones posibles:  6
 Total permutaciones generadas: 6
-Total permutaciones validas:   2
-Tiempo de ejecucion:           0.000007 segundos
+Total permutaciones validas:   1
+Tiempo de ejecucion:           0.00048 segundos
 \end{verbatim}
 
 Comparando con $\{1, 2, 3\}$ que produjo 4 validas, aqui solo se obtienen 2,
@@ -514,7 +516,7 @@ $n$ & $n!$ & Validas & Tiempo (s) & Factor \\
 6  & 720           & 144     & 0.0752   & ---   \\
 8  & 40\,320       & 2\,880  & 2.0437   & $\times$27x \\
 10 & 3\,628\,800   & 86\,400 & 82.0305  & $\times$40x \\
-12 & 479\,001\,600 & $\sim$2\,592\,000$^*$ & $\sim$3\,300$^*$ & $\times$40x (est.) \\
+12 & 479\,001\,600 & 3\,628\,800 & 3\,962.63 & $\times$40x \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -627,7 +629,7 @@ $n$ & Total ($n!$) & Validas (medidas) & Proporcion & Observacion \\
 6  & 720           & 144     & 20.0\% & Medido experimentalmente \\
 8  & 40\,320       & 2\,880  & 7.1\%  & Medido experimentalmente \\
 10 & 3\,628\,800   & 86\,400 & 2.4\%  & Medido experimentalmente \\
-12 & 479\,001\,600 & $\sim$2\,592\,000 & $\sim$0.5\% & Estimado por extrapolacion \\
+12 & 479\,001\,600 & 3\,628\,800 & 0.5\% & Medido experimentalmente \\
 \bottomrule
 \end{tabular}
 \end{center}
