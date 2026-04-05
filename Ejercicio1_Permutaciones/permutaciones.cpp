@@ -78,7 +78,7 @@ int main(){
     cout << "Total permutaciones posibles: " << factorial(n) << endl;
     cout << "Total permutaciones generadas: " << total_generadas << endl;
     cout << "Total permutaciones validas: " << total_validas << endl;
-    cout << "Tiempo de ejecución: " << duracion.count() << " ns" << endl;
+    cout << "Tiempo de ejecución: " << duracion.count() << " segundos" << endl;
 
     return 0;
 }

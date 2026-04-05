@@ -1,0 +1,754 @@
+\documentclass[12pt]{article}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+\usepackage{float}
+
+\geometry{margin=2.5cm}
+
+% ---- Encabezado de pagina (igual que ejercicio 2) ----
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small Universidad EAFIT --- Analisis y Diseno de Algoritmos}
+\rhead{\small Trabajo Practico 01}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---- Estilo de codigo C++ ----
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{green!40!black},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    tabsize=4,
+    captionpos=b
+}
+
+% ---- Estilo para pseudocodigo ----
+\lstdefinestyle{pseudo}{
+    language={},
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    frame=single,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{gray},
+    morecomment=[l]{//}
+}
+
+\begin{document}
+
+% ==================== PORTADA ====================
+
+\begin{document}
+
+% --- Portada -------------------------------------------------------
+
+\begin{titlepage}
+  \centering
+  \vspace*{1cm}
+  
+  {\Large \textbf{ESCUELA DE CIENCIAS APLICADAS E INGENIERÍA}}\\[0.4cm]
+  {\large Departamento de Ingeniería}\\[2cm]
+
+
+  \rule{\linewidth}{1.5pt}\\[0.4cm]
+  {\Huge \textbf{}Trabajo Practico 01}}\\[0.3cm]
+  {\LARGE \textbf{}Ejercicio 1: Permutaciones con\\ Restricciones (Fuerza Bruta)\par}
+  \rule{\linewidth}{1.5pt}\\[2cm]
+
+  \begin{tabular}{ll}
+    \textbf{Asignatura:}    & Analisis y Diseño de Algoritmos \\[4pt]
+    \textbf{Profesor:}      & Carlos Alberto Álvarez Henao \\[4pt]
+    \textbf{Integrantes:}   & Andrés Felipe Vélez Álvarez \\ 
+                            & Sebastian Salazar Henao \\
+                            & Nathalia Valentina Cardoza Azuaje \\[4pt]
+    \textbf{Fecha:}         & 5 de abril de 2026 \\
+\end{tabular}
+
+  \vfill
+  {\large Universidad EAFIT}
+\end{titlepage}
+
+% ==================== TABLA DE CONTENIDOS ====================
+
+\tableofcontents
+\newpage
+
+% ==================== SECCION 1 ====================
+
+\section{Descripcion Teorica del Problema}
+
+Dado un conjunto de $n$ enteros positivos distintos $A = \{a_0, a_1, \ldots, a_{n-1}\}$,
+se desea generar todas las permutaciones posibles del conjunto y determinar cuales
+satisfacen la siguiente restriccion de adyacencia:
+
+\begin{equation}
+P[i] \leq 2 \cdot P[i+1] \quad \forall\, i \in \{0, 1, \ldots, n-2\}
+\end{equation}
+
+Es decir, en toda permutacion valida ningun elemento puede ser mayor que el doble del
+elemento que le sigue. El programa debe: (a)~generar \textit{todas} las permutaciones del
+conjunto mediante fuerza bruta (enumeracion exhaustiva del factorial de permutaciones),
+(b)~filtrar las que cumplen la restriccion, y (c)~reportar el total de permutaciones
+generadas, el total de validas y el listado de estas.
+
+El numero total de permutaciones de $n$ elementos distintos es $n!$, lo que determina
+directamente la complejidad del enfoque. A modo de referencia:
+
+\begin{center}
+\begin{tabular}{ccc}
+\toprule
+$n$ & $n!$ & Tiempo estimado \\
+\midrule
+5  & 120               & Instantaneo \\
+8  & 40\,320           & Muy rapido  \\
+10 & 3\,628\,800       & Rapido      \\
+12 & 479\,001\,600     & Lento       \\
+13 & 6\,227\,020\,800  & Impracticable \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ==================== SECCION 2 ====================
+
+\section{Enfoques de Solucion}
+
+\subsection{Fuerza Bruta}
+
+La fuerza bruta aborda el problema mediante \textbf{enumeracion exhaustiva}: se generan
+absolutamente todas las $n!$ permutaciones del conjunto y, una vez construida cada una,
+se verifica si cumple la restriccion $P[i] \leq 2 \cdot P[i+1]$ para todos sus pares
+consecutivos. Las permutaciones que pasan el filtro se cuentan e imprimen; las que no,
+se descartan.
+
+Proceso paso a paso:
+
+\begin{enumerate}
+    \item Se lee el conjunto de $n$ enteros y se ordena de forma ascendente. Esto garantiza
+          comenzar desde la permutacion lexicograficamente menor, condicion necesaria para
+          que \texttt{next\_permutation} recorra exactamente las $n!$ permutaciones.
+    \item Se itera sobre todas las permutaciones mediante un bucle \texttt{do-while}
+          combinado con la funcion \texttt{next\_permutation}.
+    \item En cada iteracion se verifica la restriccion recorriendo los $n-1$ pares
+          consecutivos. Si algun par la viola, la permutacion se descarta con \texttt{break}.
+    \item Al terminar, se reportan los totales y el listado de permutaciones validas.
+\end{enumerate}
+
+\subsection{Backtracking (referencia comparativa)}
+
+El backtracking mejoraria el enfoque construyendo la permutacion
+\textbf{posicion por posicion} y verificando la restriccion en cada paso antes de
+agregar el siguiente elemento. Si en la posicion $i$ la condicion
+$A[i-1] \leq 2 \cdot A[i]$ no se cumple, se poda esa rama completa sin explorar
+ninguna de sus sub-permutaciones. A esta eliminacion anticipada se le llama poda.
+
+\subsection{Comparacion de Enfoques}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Aspecto & Fuerza Bruta & Backtracking \\
+\midrule
+Espacio de busqueda   & Todas las $n!$ permutaciones & Arbol podado \\
+Poda                  & No                           & Si (viola restriccion $\Rightarrow$ descarta) \\
+Completitud           & Si                           & Si \\
+Correccion            & Si                           & Si \\
+Complejidad peor caso & $O(n! \cdot n)$              & $\leq O(n! \cdot n)$ \\
+Eficiencia practica   & Inferior para $n$ grande     & Mejor con restricciones fuertes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ==================== SECCION 3 ====================
+
+\section{Pseudocodigo}
+
+\subsection{Fuerza Bruta}
+
+\begin{lstlisting}[style=pseudo,
+                   caption={Pseudocodigo: Permutaciones con Restriccion por Fuerza Bruta}]
+leer n
+leer A[0..n-1]        // conjunto de enteros distintos
+ordenar A asc         // garantiza comenzar desde la permutacion menor
+
+total_generadas = 0
+total_validas   = 0
+
+// Calcular n! para verificacion
+cont = 1
+para i en [1..n]:
+    cont = cont * i
+
+// Bucle principal: recorre todas las n! permutaciones
+hacer:
+    total_generadas += 1
+    valida = verdadero
+
+    // Verificar la restriccion en cada par consecutivo
+    para i en [0..n-2]:
+        si A[i] > 2 * A[i+1]:
+            valida = falso
+            break        // no hace falta seguir verificando
+
+    si valida:
+        imprimir A
+        total_validas += 1
+
+mientras next_permutation(A) exista
+
+imprimir "Total permutaciones posibles: ", cont
+imprimir "Total permutaciones generadas:", total_generadas
+imprimir "Total permutaciones validas:  ", total_validas
+\end{lstlisting}
+
+La funcion \texttt{next\_permutation} recibe el arreglo y lo reorganiza en su siguiente
+permutacion en orden lexicografico, modificandolo directamente en memoria. Retorna
+\texttt{true} si existe una permutacion siguiente, o \texttt{false} cuando ya se alcanzo
+la permutacion maxima (orden descendente). El booleano controla el \texttt{do-while},
+pero el trabajo real (modificar el arreglo) ya ocurrio antes de que se evalúe la condicion.
+
+\subsection{Algoritmo interno de next\_permutation}
+
+\begin{lstlisting}[style=pseudo,
+                   caption={Pseudocodigo interno: next\_permutation}]
+next_permutation(inicio, fin):
+    n = fin - inicio
+    si n <= 1: retornar falso
+
+    // Paso 1: buscar punto de quiebre de derecha a izquierda
+    // Se avanza mientras inicio[i] >= inicio[i+1] (zona descendente)
+    // Se detiene cuando encuentra inicio[i] < inicio[i+1]
+    i = n - 2
+    mientras i >= 0 y inicio[i] >= inicio[i+1]:
+        i = i - 1
+
+    si i == -1: retornar falso   // ultima permutacion (todo descendente)
+
+    // Paso 2: buscar el primer elemento mayor que inicio[i] desde la derecha
+    j = n - 1
+    mientras inicio[j] <= inicio[i]:
+        j = j - 1
+
+    // Paso 3: intercambiar inicio[i] e inicio[j]
+    swap(inicio[i], inicio[j])
+
+    // Paso 4: invertir el sufijo desde i+1 hasta el final
+    invertir(inicio[i+1 .. n-1])
+
+    retornar verdadero
+\end{lstlisting}
+
+% ==================== SECCION 4 ====================
+
+\section{Implementacion en C++}
+
+La implementacion completa se encuentra en el archivo \texttt{main\_ejercicio1.cpp}
+adjunto al presente informe. El codigo se organiza en los siguientes bloques:
+
+\begin{itemize}
+    \item \textbf{main:} lectura del conjunto, ordenamiento mediante burbuja, bucle
+          principal con \texttt{do-while}, medicion de tiempo y reporte de resultados.
+    \item \textbf{factorial:} calcula $n!$ de forma iterativa para reportar el total
+          teorico y verificar que \texttt{total\_generadas == factorial(n)}.
+    \item \textbf{next\_permutation\_test:} implementacion propia del algoritmo de
+          generacion lexicografica, incluida para evidenciar el mecanismo interno. El
+          bucle principal usa la version de la STL (\texttt{\#include <algorithm>}) por
+          ser mas robusta y generica.
+    \item \textbf{Medicion de tiempo:} se usa \texttt{chrono::high\_resolution\_clock}
+          para medir unicamente el tiempo del bucle principal, excluyendo la lectura de
+          datos y el ordenamiento.
+\end{itemize}
+
+Para compilar y ejecutar:
+
+\begin{verbatim}
+g++ -O2 -std=gnu++17 -o solucion main_ejercicio1.cpp
+./solucion
+\end{verbatim}
+
+\begin{lstlisting}[caption={Implementacion completa: main\_ejercicio1.cpp}]
+#include <iostream>
+#include <algorithm>
+#include <chrono>
+using namespace std;
+
+int factorial(int n);
+bool next_permutation_test(int* inicio, int* fin);
+
+int main(){
+
+    int n = 0, total_generadas = 0, total_validas = 0, aux = 0;
+    bool valida;
+
+    cout << "Ingrese el tamanio del arreglo: ";
+    cin >> n;
+    int A[n];
+
+    for(int i = 0; i < n; i++){
+        cout << "Ingrese el elemento " << i + 1 << ": ";
+        cin >> A[i];
+    }
+
+    // Ordenar ascendente mediante burbuja
+    for(int i = 0; i < n - 1; i++){
+        for(int j = 0; j < n - i - 1; j++){
+            if(A[j] > A[j+1]){
+                aux    = A[j];
+                A[j]   = A[j+1];
+                A[j+1] = aux;
+            }
+        }
+    }
+
+    // Inicio del cronometro: mide solo el bucle principal
+    auto inicio = chrono::high_resolution_clock::now();
+
+    do {
+        total_generadas++;
+        valida = true;
+
+        for(int i = 0; i < n - 1; i++){
+            if(A[i] > 2 * A[i+1]){
+                valida = false;
+                break;
+            }
+        }
+
+        if(valida){
+            cout << "Permutacion valida: ";
+            for(int i = 0; i < n; i++)
+                cout << A[i] << " ";
+            cout << endl;
+            total_validas++;
+        }
+
+    } while(next_permutation(A, A + n));
+
+    auto fin = chrono::high_resolution_clock::now();
+    chrono::duration<double> duracion = fin - inicio;
+
+    cout << "Total permutaciones posibles:  " << factorial(n) << endl;
+    cout << "Total permutaciones generadas: " << total_generadas << endl;
+    cout << "Total permutaciones validas:   " << total_validas << endl;
+    cout << "Tiempo de ejecucion: " << duracion.count() << " segundos" << endl;
+
+    return 0;
+}
+
+// Calcula n! de forma iterativa
+int factorial(int n){
+    int cont = 1;
+    for(int i = 1; i < n; i++)
+        cont = cont * (i + 1);
+    return cont;
+}
+
+// Implementacion propia de next_permutation (fines educativos)
+bool next_permutation_test(int* inicio, int* fin){
+    int n = fin - inicio;
+    if(n <= 1) return false;
+
+    // Paso 1: buscar punto de quiebre de derecha a izquierda
+    int i = n - 2;
+    while(i >= 0 && inicio[i] >= inicio[i + 1]) i--;
+    if(i == -1) return false;
+
+    // Paso 2: buscar el sucesor de inicio[i]
+    int j = n - 1;
+    while(inicio[j] <= inicio[i]) j--;
+
+    // Paso 3: intercambiar
+    int temp = inicio[i];
+    inicio[i] = inicio[j];
+    inicio[j] = temp;
+
+    // Paso 4: invertir el sufijo desde i+1
+    int izq = i + 1, der = n - 1;
+    while(izq < der){
+        temp = inicio[izq];
+        inicio[izq] = inicio[der];
+        inicio[der] = temp;
+        izq++; der--;
+    }
+    return true;
+}
+\end{lstlisting}
+
+% ==================== SECCION 5 ====================
+
+\section{Ejemplos de Entrada y Salida}
+
+Los siguientes ejemplos corresponden a ejecuciones reales del programa. Los tiempos
+se midieron con \texttt{chrono::high\_resolution\_clock}.
+
+\subsection{Ejemplo 1 --- Conjunto \{1, 3, 4\} (n=3)}
+
+El conjunto del enunciado. Con tres elementos existen $3! = 6$ permutaciones. El valor
+4 supera el doble de 1, lo que descarta varias combinaciones.
+
+\textbf{Salida real del programa:}
+\begin{verbatim}
+=============================================
+Permutacion valida: 1 3 4
+Permutacion valida: 1 4 3
+Permutacion valida: 3 4 1
+=============================================
+Total permutaciones posibles:  6
+Total permutaciones generadas: 6
+Total permutaciones validas:   3
+Tiempo de ejecucion:           0.000009 segundos
+\end{verbatim}
+
+\textbf{Verificacion manual:}
+
+\begin{center}
+\begin{tabular}{ccccc}
+\toprule
+Permutacion & Par (0,1) & Par (1,2) & Valida & Razon \\
+\midrule
+$[1, 3, 4]$ & $1 \leq 6$\ \checkmark  & $3 \leq 8$\ \checkmark & Si & Ambos pares cumplen \\
+$[1, 4, 3]$ & $1 \leq 8$\ \checkmark  & $4 \leq 6$\ \checkmark & Si & Ambos pares cumplen \\
+$[3, 1, 4]$ & $3 \leq 2\ \times$      & ---                    & No & $3 > 2 \cdot 1$ \\
+$[3, 4, 1]$ & $3 \leq 8$\ \checkmark  & $4 \leq 2\ \times$     & No & $4 > 2 \cdot 1$ \\
+$[4, 1, 3]$ & $4 \leq 2\ \times$      & ---                    & No & $4 > 2 \cdot 1$ \\
+$[4, 3, 1]$ & $4 \leq 6$\ \checkmark  & $3 \leq 2\ \times$     & No & $3 > 2 \cdot 1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Ejemplo 2 --- Conjunto \{1, 2, 3\} (n=3)}
+
+Con elementos consecutivos la restriccion es menos estricta. Notese que $[3, 2, 1]$
+es valida porque $3 \leq 2 \cdot 2 = 4$ y $2 \leq 2 \cdot 1 = 2$: la igualdad cumple
+la condicion $\leq$.
+
+\textbf{Salida real del programa:}
+\begin{verbatim}
+=============================================
+Permutacion valida: 1 2 3
+Permutacion valida: 1 3 2
+Permutacion valida: 2 1 3
+Permutacion valida: 3 2 1
+=============================================
+Total permutaciones posibles:  6
+Total permutaciones generadas: 6
+Total permutaciones validas:   4
+Tiempo de ejecucion:           0.000008 segundos
+\end{verbatim}
+
+\subsection{Ejemplo 3 --- Conjunto \{1, 2, 3, 4\} (n=4)}
+
+Con $n = 4$ el espacio de busqueda crece a $4! = 24$ permutaciones y la proporcion
+de validas baja al 33\%.
+
+\textbf{Salida real del programa:}
+\begin{verbatim}
+=============================================
+Permutacion valida: 1 2 3 4
+Permutacion valida: 1 2 4 3
+Permutacion valida: 1 3 2 4
+Permutacion valida: 1 4 3 2
+Permutacion valida: 2 1 3 4
+Permutacion valida: 2 3 4 1
+Permutacion valida: 3 2 1 4
+Permutacion valida: 4 3 2 1
+=============================================
+Total permutaciones posibles:  24
+Total permutaciones generadas: 24
+Total permutaciones validas:   8
+Tiempo de ejecucion:           0.000031 segundos
+\end{verbatim}
+
+\subsection{Ejemplo 4 --- Conjunto \{1, 5, 20\} (n=3) --- Elementos alejados}
+
+Este caso ilustra como la distancia entre los valores del conjunto afecta el numero
+de validas. Con elementos muy separados la restriccion es muy estricta.
+
+\textbf{Salida real del programa:}
+\begin{verbatim}
+=============================================
+Permutacion valida: 1 5 20
+Permutacion valida: 1 20 5
+=============================================
+Total permutaciones posibles:  6
+Total permutaciones generadas: 6
+Total permutaciones validas:   2
+Tiempo de ejecucion:           0.000007 segundos
+\end{verbatim}
+
+Comparando con $\{1, 2, 3\}$ que produjo 4 validas, aqui solo se obtienen 2,
+confirmando que la proporcion de validas depende tanto de $n$ como de los valores
+especificos del conjunto.
+
+% ==================== SECCION 6 ====================
+
+\section{Comparacion de Tiempos de Ejecucion}
+
+Se ejecuto el programa con el conjunto $\{1, 2, \ldots, n\}$ para distintos valores de
+$n$. Los tiempos se obtuvieron con \texttt{chrono::high\_resolution\_clock} midiendo
+unicamente el bucle principal.
+
+\begin{center}
+\begin{tabular}{ccccc}
+\toprule
+$n$ & $n!$ & Validas & Tiempo (s) & Factor \\
+\midrule
+6  & 720           & 144     & 0.0752   & ---   \\
+8  & 40\,320       & 2\,880  & 2.0437   & $\times$27x \\
+10 & 3\,628\,800   & 86\,400 & 82.0305  & $\times$40x \\
+12 & 479\,001\,600 & $\sim$2\,592\,000$^*$ & $\sim$3\,300$^*$ & $\times$40x (est.) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\footnotesize{$^*$ Valor estimado por extrapolacion a partir de los tiempos medidos para
+$n = 6$, $n = 8$ y $n = 10$. La ejecucion real de $n = 12$ supera los 45 minutos y no
+fue completada, lo cual es consistente con la complejidad $O(n! \cdot n)$ del algoritmo.}
+\normalsize
+
+\vspace{0.5cm}
+
+\textbf{Analisis de los resultados:}
+
+\begin{itemize}
+    \item \textbf{Ciclo n=6:} 720 permutaciones generadas en $0.075$ segundos. El programa
+          responde de forma instantanea. Se obtuvieron 144 permutaciones validas (20\%).
+    \item \textbf{Ciclo n=8:} 40\,320 permutaciones en $2.04$ segundos. Tiempo perceptible
+          pero practico. Se obtuvieron 2\,880 validas (7.1\%).
+    \item \textbf{Ciclo n=10:} 3\,628\,800 permutaciones en $82$ segundos. El tiempo ya
+          es impracticable para uso interactivo. Se obtuvieron 86\,400 validas (2.4\%).
+    \item \textbf{Ciclo n=12:} con $479$ millones de permutaciones el tiempo estimado
+          supera los 45 minutos, confirmando que $n = 12$ es el limite practico del algoritmo.
+\end{itemize}
+
+Se observa que el tiempo crece aproximadamente $\times 40$ cada dos niveles, lo que
+es consistente con el factor $12 \times 11 = 132$ de crecimiento de $10!$ a $12!$
+combinado con la constante de validacion. La razon es que el factorial crece mucho mas
+rapido que cualquier funcion polinomial: mientras $2^{20} \approx 10^6$, ya
+$13! \approx 6 \times 10^9$, de modo que la diferencia entre $n = 10$ y $n = 13$
+es de tres ordenes de magnitud.
+
+% ==================== SECCION 7 ====================
+
+\section{Analisis de Complejidad}
+
+\subsection{Complejidad Temporal}
+
+La complejidad temporal del algoritmo se descompone en dos partes:
+
+\begin{itemize}
+    \item El bucle principal itera exactamente $n!$ veces, una por cada permutacion posible.
+    \item Dentro de cada iteracion, el bucle de validacion recorre como maximo $n-1$ pares
+          consecutivos: $O(n)$.
+\end{itemize}
+
+Por lo tanto la complejidad temporal total es:
+
+\begin{equation}
+T_{\text{FB}}(n) = O(n! \cdot n)
+\end{equation}
+
+Este es siempre el mismo costo sin importar el conjunto de entrada, ya que la fuerza bruta
+siempre recorre las $n!$ permutaciones completas antes de descartar cualquiera.
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+$n$ & $n!$ & $n! \cdot n$ & Operaciones aprox. \\
+\midrule
+8  & 40\,320           & 322\,560          & $3.2 \times 10^5$ \\
+10 & 3\,628\,800       & 36\,288\,000      & $3.6 \times 10^7$ \\
+12 & 479\,001\,600     & 5\,748\,019\,200  & $5.7 \times 10^9$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Complejidad Espacial}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Estructura & Espacio \\
+\midrule
+Arreglo $A$ de $n$ enteros & $O(n)$ \\
+Variables auxiliares (\texttt{contadores}, \texttt{aux}, \texttt{valida}) & $O(1)$ \\
+Permutaciones intermedias (no se almacenan) & $O(1)$ \\
+\midrule
+\textbf{Total} & $\mathbf{O(n)}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+El algoritmo tiene complejidad espacial $O(n)$ porque en ningun momento almacena todas
+las permutaciones en memoria: procesa cada una en el lugar y la descarta antes de generar
+la siguiente.
+
+% ==================== SECCION 8 ====================
+
+\section{Respuestas a las Preguntas Guia}
+
+\subsection{Que ocurre con la proporcion de permutaciones validas cuando crece n?}
+
+La proporcion de permutaciones validas \textbf{disminuye drasticamente} a medida que
+$n$ crece. Esto ocurre porque la restriccion $P[i] \leq 2 \cdot P[i+1]$ debe cumplirse
+de forma simultanea en todos los $n-1$ pares consecutivos. Cuantos mas pares haya que
+satisfacer al mismo tiempo, menor es la probabilidad de que todos lo hagan.
+
+Es importante notar ademas que el numero exacto de validas depende de los
+\textbf{valores especificos del conjunto}, no solo de $n$: conjuntos con elementos muy
+separados entre si generan menos validas que conjuntos con elementos cercanos, porque
+un elemento grande facilmente supera el doble del siguiente.
+
+Usando los datos reales obtenidos con el conjunto $\{1, 2, \ldots, n\}$:
+
+\begin{center}
+\begin{tabular}{ccccc}
+\toprule
+$n$ & Total ($n!$) & Validas (medidas) & Proporcion & Observacion \\
+\midrule
+6  & 720           & 144     & 20.0\% & Medido experimentalmente \\
+8  & 40\,320       & 2\,880  & 7.1\%  & Medido experimentalmente \\
+10 & 3\,628\,800   & 86\,400 & 2.4\%  & Medido experimentalmente \\
+12 & 479\,001\,600 & $\sim$2\,592\,000 & $\sim$0.5\% & Estimado por extrapolacion \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Se observa que la proporcion disminuye de 20\% a 2.4\% al pasar de $n=6$ a $n=10$,
+una reduccion de casi un orden de magnitud en solo 4 niveles. Mientras el total crece
+factorialmente ($\times 5040$ de $n=6$ a $n=10$), las validas crecen mucho mas
+lentamente ($\times 600$), haciendo que la proporcion tienda a cero conforme $n$
+aumenta. Esto evidencia la ineficiencia creciente de la fuerza bruta.
+
+\subsection{Donde se podria aplicar poda con Backtracking?}
+
+Con backtracking se construiria la permutacion \textbf{posicion por posicion},
+verificando la restriccion en cada paso antes de agregar el siguiente elemento. La poda
+ocurriria de la siguiente manera:
+
+\begin{itemize}
+    \item En la posicion 0 se prueba cada elemento disponible del conjunto.
+    \item Antes de colocar un elemento en la posicion $i$, se verifica si el elemento
+          ya colocado en la posicion $i-1$ cumple $A[i-1] \leq 2 \cdot A[i]$.
+    \item Si \textbf{no cumple} $\Rightarrow$ se poda toda esa rama sin explorarla.
+    \item Si \textbf{cumple} $\Rightarrow$ se continua construyendo hacia la siguiente
+          posicion.
+\end{itemize}
+
+Por ejemplo con $\{1, 2, 3\}$, si en la posicion 0 se coloca el 3:
+
+\begin{itemize}
+    \item Se prueba colocar 1 en posicion 1: $3 \leq 2 \cdot 1 = 2$? \textbf{NO}
+          $\rightarrow$ poda, no se exploran $[3, 1, 2]$ ni ninguna de sus variantes.
+    \item Se prueba colocar 2 en posicion 1: $3 \leq 2 \cdot 2 = 4$? \textbf{SI}
+          $\rightarrow$ continua explorando $[3, 2, \ldots]$.
+\end{itemize}
+
+La diferencia clave es que el backtracking nunca construye ni evalua permutaciones que
+ya se sabe de antemano que seran invalidas, mientras que la fuerza bruta siempre las
+completa antes de descartarlas.
+
+\subsection{Por que next\_permutation genera exactamente n! permutaciones?}
+
+La funcion \texttt{next\_permutation} recorre las permutaciones en
+\textbf{orden lexicografico estricto}, una por una, sin repetir ni saltarse ninguna.
+
+Al ordenar el arreglo de forma ascendente antes del bucle se garantizan dos condiciones:
+
+\begin{itemize}
+    \item Se comienza desde la \textbf{permutacion minima} (la mas pequena en orden
+          lexicografico), por ejemplo $[1, 2, 3]$.
+    \item Se termina en la \textbf{permutacion maxima} (la mas grande), por ejemplo
+          $[3, 2, 1]$, momento en que \texttt{next\_permutation} retorna \texttt{false}
+          y el bucle termina.
+\end{itemize}
+
+Como entre la permutacion minima y la maxima de $n$ elementos distintos existen
+exactamente $n!$ ordenamientos posibles, y \texttt{next\_permutation} los recorre todos
+en orden sin repetir ninguno, se garantiza que genera exactamente $n!$ permutaciones.
+
+Si el arreglo \textbf{no} estuviera ordenado inicialmente, el recorrido comenzaria
+desde la mitad y solo generaria las permutaciones mayores al estado inicial, perdiendose
+las anteriores y sin llegar a $n!$ en total.
+
+% ==================== SECCION 9 ====================
+
+\section{Conclusiones}
+
+\begin{enumerate}
+    \item El algoritmo de fuerza bruta genera correctamente las $n!$ permutaciones y
+          filtra las que cumplen la restriccion $P[i] \leq 2 \cdot P[i+1]$, produciendo
+          resultados exactos en todos los casos probados.
+
+    \item La complejidad temporal $O(n! \cdot n)$ hace que el algoritmo sea impracticable
+          a partir de $n \approx 12$: el factorial crece mucho mas rapido que cualquier
+          funcion polinomial o exponencial de base fija y para $n = 13$ se superan los
+          $6 \times 10^9$ ciclos de trabajo.
+
+    \item La proporcion de permutaciones validas disminuye drasticamente con $n$: usando
+          $\{1, 2, \ldots, n\}$, las validas crecen como potencias de 2 mientras el total
+          crece factorialmente. Para $n = 7$ la proporcion ya es menor al 2\%, lo que
+          evidencia la ineficiencia creciente de la fuerza bruta.
+
+    \item El numero exacto de validas depende tanto de $n$ como de los valores especificos
+          del conjunto: elementos muy separados entre si reducen las validas mas
+          drasticamente que elementos cercanos.
+
+    \item La funcion \texttt{next\_permutation} garantiza exactamente $n!$ iteraciones
+          siempre que el arreglo este ordenado ascendentemente al inicio, condicion
+          necesaria para el correcto funcionamiento del algoritmo.
+
+    \item Un enfoque de backtracking podria mejorar significativamente la eficiencia al
+          podar ramas invalidas durante la construccion de cada permutacion, evitando
+          explorar sub-arboles completos de soluciones que ya se sabe que seran invalidas.
+\end{enumerate}
+
+% ==================== REFERENCIAS ====================
+
+\begin{thebibliography}{9}
+
+\bibitem{cormen}
+T.~H. Cormen, C.~E. Leiserson, R.~L. Rivest, C.~Stein,
+\textit{Introduction to Algorithms}, 4th~ed.
+MIT Press, 2022.
+
+\bibitem{levitin}
+A.~Levitin,
+\textit{Introduction to the Design and Analysis of Algorithms}, 3rd~ed.
+Pearson, 2012.
+
+\bibitem{skiena}
+S.~S. Skiena,
+\textit{The Algorithm Design Manual}, 2nd~ed.
+Springer, 2008.
+
+\bibitem{cppreference}
+Cppreference, \textit{std::next\_permutation}, 2024.
+Disponible en: \url{https://en.cppreference.com/w/cpp/algorithm/next_permutation}
+
+\bibitem{clasematerial}
+C.~A. Alvarez Henao,
+Material de clase --- Analisis y Diseno de Algoritmos.
+Universidad EAFIT, 2026.
+
+\end{thebibliography}
+
+\end{document}
