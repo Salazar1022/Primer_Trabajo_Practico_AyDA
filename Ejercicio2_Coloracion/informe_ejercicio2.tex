@@ -2,7 +2,7 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[spanish]{babel}
+
 \usepackage{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
@@ -21,29 +21,6 @@
 
 \definecolor{codegray}{rgb}{0.95,0.95,0.95}
 \definecolor{codeblue}{rgb}{0.13,0.29,0.53}
-\definecolor{codecomment}{rgb}{0.38,0.45,0.38}
-\definecolor{codestring}{rgb}{0.55,0.10,0.10}
-\definecolor{keyword}{rgb}{0.10,0.27,0.60}
-
-\lstdefinestyle{cpp}{
-  backgroundcolor=\color{codegray},
-  basicstyle=\ttfamily\small,
-  keywordstyle=\color{keyword}\bfseries,
-  commentstyle=\color{codecomment}\itshape,
-  stringstyle=\color{codestring},
-  breaklines=true,
-  numbers=left,
-  numberstyle=\tiny\color{gray},
-  numbersep=8pt,
-  frame=single,
-  rulecolor=\color{gray!40},
-  tabsize=4,
-  language=C++,
-  showstringspaces=false,
-  captionpos=b,
-  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1
-           {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
-}
 
 \lstdefinestyle{pseudo}{
   backgroundcolor=\color{blue!5},
@@ -83,7 +60,7 @@
 
 
   \rule{\linewidth}{1.5pt}\\[0.4cm]
-  {\Huge \textbf{\color{azul}Trabajo Practico 01}}\\[0.3cm]
+  {\Huge \textbf{\color{codeblue}Trabajo Practico 01}}\\[0.3cm]
   {\LARGE \textbf{}Ejercicio 2: Coloracion de Grafos\\con \(k\) Colores (Backtracking)\par}
   \rule{\linewidth}{1.5pt}\\[2cm]
 
@@ -106,40 +83,34 @@
 % ===================================================================
 \section{Descripcion Teorica del Problema}
 
-\subsection{Planteamiento}
-
-Imagina un mapa donde hay varios paises vecinos y se quiere pintarlos de tal
-forma que dos paises que compartan frontera nunca tengan el mismo color.
-Ese es exactamente el concepto detras de la \textbf{coloracion de grafos}.
-
-En terminos formales, un \textbf{grafo} es un conjunto de puntos llamados
-\textbf{vertices} y lineas que los conectan llamadas \textbf{aristas}.
-La coloracion de grafos consiste en asignar un color a cada vertice de manera
-que ningun par de vertices conectados por una arista tenga el mismo color.
-Cuando se tienen exactamente $k$ colores disponibles, se habla de una
-\textbf{$k$-coloracion valida}, y la condicion que debe cumplirse es:
+Dado un grafo no dirigido $G=(V,E)$ con $n$ vertices y un entero $k$, la
+\textbf{$k$-coloracion valida} es una asignacion de colores $\{1,\ldots,k\}$
+a los vertices tal que ningun par de vertices adyacentes comparte el mismo color:
 
 \begin{equation}
   \forall\,(u,v)\in E \colon \text{color}[u] \neq \text{color}[v]
 \end{equation}
 
-Este problema tiene aplicaciones practicas muy concretas:
+El problema tiene aplicaciones en horarios de examenes, asignacion de frecuencias
+de radio y asignacion de registros en compiladores, entre otras.
 
-\begin{itemize}
-  \item \textbf{Horarios de examenes:} cada materia es un vertice; si dos
-        materias tienen estudiantes en comun se conectan con una arista.
-        Colorear el grafo equivale a asignar franjas horarias de modo que
-        ningun estudiante tenga dos examenes al mismo tiempo.
+El \textbf{numero cromatico} $\chi(G)$ es el minimo $k$ para el que existe
+una $k$-coloracion valida. El grafo admite $k$-coloracion si y solo si
+$\chi(G)\leq k$. Valores canonicos: $\chi(C_{2m})=2$, $\chi(C_{2m+1})=3$,
+$\chi(K_n)=n$, y todo grafo planar satisface $\chi\leq 4$ \cite{appel1977}.
 
-  \item \textbf{Frecuencias de radio:} dos antenas cercanas no pueden usar
-        la misma frecuencia. Cada antena es un vertice y la frecuencia
-        asignada es el color.
+El grafo se representa mediante una \textbf{matriz de adyacencia} $A$ de
+$n\times n$, donde $A[i][j]=1$ si existe arista entre $i$ y $j$, y $0$
+si no. Por ser no dirigido, $A$ es simetrica. Ejemplo para $C_4$:
 
-  \item \textbf{Compiladores:} las variables que se usan al mismo tiempo no
-        pueden compartir el mismo registro del procesador. Cada variable es
-        un vertice; si dos se usan simultaneamente se conectan, y el color
-        representa el registro asignado.
-\end{itemize}
+\[
+A = \begin{pmatrix}
+0 & 1 & 0 & 1 \\
+1 & 0 & 1 & 0 \\
+0 & 1 & 0 & 1 \\
+1 & 0 & 1 & 0
+\end{pmatrix}
+\]
 
 \begin{figure}[H]
 \centering
@@ -169,53 +140,8 @@ Este problema tiene aplicaciones practicas muy concretas:
   \draw (0)--(1) (1)--(2) (2)--(0);
   \node at (1,-3.2) {$K_3$ con 3 colores};
 \end{tikzpicture}
-\caption{Ejemplos de coloraciones validas: ningun par de vertices vecinos
-comparte color.}
+\caption{Coloraciones validas: ningun par de vertices adyacentes comparte color.}
 \end{figure}
-
-\subsection{El Numero Cromatico}
-
-El \textbf{numero cromatico} $\chi(G)$ responde a la pregunta:
-\emph{\textquestiondown con cuantos colores como minimo se puede colorear correctamente
-este grafo?}
-
-Algunos ejemplos intuitivos:
-
-\begin{itemize}
-  \item Un grafo sin aristas necesita solo 1 color: $\chi = 1$.
-  \item Cualquier ciclo de longitud par (cuadrado, hexagono\ldots) se puede
-        colorear alternando 2 colores: $\chi = 2$.
-  \item Un triangulo, donde los tres vertices estan todos conectados entre si,
-        obliga a usar 3 colores distintos: $\chi = 3$.
-  \item Un grafo donde todos estan conectados con todos ($K_n$) necesita
-        exactamente $n$ colores: $\chi = n$.
-\end{itemize}
-
-La relacion con el problema de este ejercicio es directa: el grafo admite una
-$k$-coloracion valida \textbf{si y solo si} $\chi(G) \leq k$. El algoritmo
-desarrollado puede calcular $\chi(G)$ probando con $k = 1, 2, 3, \ldots$
-hasta encontrar la primera $k$ para la que existe solucion.
-
-\subsection{Representacion del Grafo: Matriz de Adyacencia}
-
-Para trabajar con el grafo en el programa se usa una \textbf{matriz de
-adyacencia}: una tabla cuadrada de $n \times n$ donde la posicion $(i,j)$
-vale $1$ si hay una arista entre el vertice $i$ y el vertice $j$, y $0$ si
-no la hay. Como el grafo es no dirigido, la matriz siempre es simetrica
-($A[i][j] = A[j][i]$).
-
-Por ejemplo, el ciclo $C_4$ se representa asi:
-
-\[
-A = \begin{pmatrix}
-0 & 1 & 0 & 1 \\
-1 & 0 & 1 & 0 \\
-0 & 1 & 0 & 1 \\
-1 & 0 & 1 & 0
-\end{pmatrix}
-\]
-
-La fila $i$ indica con cuales vertices esta conectado el vertice $i$.
 
 % ===================================================================
 \section{Enfoques de Solucion}
@@ -339,151 +265,41 @@ verificar_coloracion(col):
 % ===================================================================
 \section{Implementacion en C++}
 
-El codigo se organiza en cinco bloques: lectura del grafo, la funcion auxiliar
-\texttt{es\_seguro}, el backtracking recursivo \texttt{bt}, la fuerza bruta
-\texttt{fuerza\_bruta}, y el programa principal con medicion de tiempos y
-verificacion cruzada.
+La implementacion completa se encuentra en el archivo \texttt{main\_ejercicio2.cpp}
+adjunto al presente informe. El codigo se organiza en los siguientes bloques:
 
-Un aspecto importante de la implementacion es la \textbf{medicion de tiempos}:
-se usa \texttt{duration\_cast<nanoseconds>} en lugar de milisegundos, y una
-funcion auxiliar \texttt{formato\_tiempo} que escala automaticamente la unidad
-(ns / us / ms / s) segun la magnitud real del tiempo. Esto evita que grafos
-pequenos siempre muestren \texttt{0.0000 ms}.
+\begin{itemize}
+  \item \texttt{leer\_grafo} / \texttt{cargar\_grafo}: lectura de la matriz de adyacencia.
+  \item \texttt{es\_seguro}: verifica que asignar el color $c$ al vertice $v$ no genere conflicto.
+  \item \texttt{bt}: backtracking recursivo con poda.
+  \item \texttt{fuerza\_bruta}: enumeracion exhaustiva de las $k^n$ combinaciones.
+  \item \texttt{medir\_ns}: mide tiempos promediando \texttt{REPS=100\,000} repeticiones
+        para garantizar precision en grafos pequenos donde la ejecucion individual
+        no supera la resolucion del reloj.
+  \item \texttt{main}: menu, ejecucion de ambos metodos, verificacion cruzada y tabla comparativa.
+\end{itemize}
 
-\begin{lstlisting}[style=cpp, caption={main.cpp --- Coloracion de Grafos}]
-#include <iostream>
-#include <vector>
-#include <chrono>
-#include <iomanip>
-#include <string>
-using namespace std;
-using namespace std::chrono;
-
-int n, k;
-vector<vector<int>> adj;
-vector<int> color, primera_sol;
-bool primera_guardada = false;
-long long total_bt=0, total_fb=0, nodos_bt=0, nodos_fb=0;
-
-// Escala la unidad de tiempo segun la magnitud
-string formato_tiempo(double ns) {
-    ostringstream oss;
-    if      (ns < 1000.0)       oss << fixed << setprecision(2) << ns         << " ns";
-    else if (ns < 1000000.0)    oss << fixed << setprecision(4) << ns/1000.0  << " us";
-    else if (ns < 1000000000.0) oss << fixed << setprecision(4) << ns/1e6     << " ms";
-    else                        oss << fixed << setprecision(4) << ns/1e9     << " s";
-    return oss.str();
-}
-
-// Verifica que asignar el color c al vertice v no genere conflicto
-bool es_seguro(int v, int c) {
-    for (int u = 0; u < n; u++)
-        if (adj[v][u] && color[u] == c) return false;
-    return true;
-}
-
-// Backtracking: asigna colores vertice por vertice con poda
-void bt(int v) {
-    nodos_bt++;
-    if (v == n) {
-        total_bt++;
-        if (!primera_guardada) { primera_sol=color; primera_guardada=true; }
-        return;
-    }
-    for (int c = 1; c <= k; c++) {
-        if (es_seguro(v, c)) {
-            color[v] = c;
-            bt(v + 1);
-            color[v] = 0; // backtrack
-        }
-    }
-}
-
-// Verifica si una asignacion completa es una coloracion valida
-bool verificar_coloracion(const vector<int>& col) {
-    for (int u = 0; u < n; u++)
-        for (int v = u+1; v < n; v++)
-            if (adj[u][v] && col[u]==col[v]) return false;
-    return true;
-}
-
-// Fuerza bruta: genera todas las k^n combinaciones y filtra las validas
-void fuerza_bruta() {
-    long long tc = 1;
-    for (int i = 0; i < n; i++) tc *= k;
-    vector<int> col(n);
-    for (long long mask = 0; mask < tc; mask++) {
-        nodos_fb++;
-        long long tmp = mask;
-        for (int v=0; v<n; v++) { col[v]=tmp%k+1; tmp/=k; }
-        if (verificar_coloracion(col)) total_fb++;
-    }
-}
-
-int main() {
-    // Lectura del grafo
-    cout << "Numero de vertices (n): "; cin >> n;
-    cout << "Numero de colores  (k): "; cin >> k;
-    adj.assign(n, vector<int>(n,0)); color.assign(n,0);
-    cout << "Ingrese la matriz de adyacencia " << n << "x" << n << ":\n";
-    for (int i=0; i<n; i++) {
-        cout << "  Fila " << i << ": ";
-        for (int j=0; j<n; j++) cin >> adj[i][j];
-    }
-
-    // BACKTRACKING -- medicion en nanosegundos
-    auto t0 = high_resolution_clock::now();
-    bt(0);
-    auto t1 = high_resolution_clock::now();
-    double ns_bt = duration_cast<nanoseconds>(t1-t0).count();
-
-    cout << "\n=== BACKTRACKING ===\n";
-    if (total_bt == 0)
-        cout << "No existe una " << k << "-coloracion valida.\n";
-    else {
-        cout << "Total de coloraciones validas: " << total_bt << "\n";
-        cout << "Primera solucion:\n";
-        for (int v=0; v<n; v++)
-            cout << "  vertice "<<v<<" -> color "<<primera_sol[v]<<"\n";
-    }
-    cout << "Nodos explorados: " << nodos_bt << "\n";
-    cout << "Tiempo: " << formato_tiempo(ns_bt) << "\n";
-
-    // FUERZA BRUTA -- medicion en nanosegundos
-    auto t2 = high_resolution_clock::now();
-    fuerza_bruta();
-    auto t3 = high_resolution_clock::now();
-    double ns_fb = duration_cast<nanoseconds>(t3-t2).count();
-
-    cout << "\n=== FUERZA BRUTA ===\n";
-    cout << "Combinaciones generadas: " << nodos_fb
-         << " (" << k << "^" << n << ")\n";
-    cout << "Total de coloraciones validas: " << total_fb << "\n";
-    cout << "Tiempo: " << formato_tiempo(ns_fb) << "\n";
-
-    // Verificacion y comparacion
-    cout << "\n=== VERIFICACION CRUZADA ===\n";
-    cout << (total_bt==total_fb ? "OK" : "ERROR")
-         << "  Ambos: " << total_bt << " coloraciones\n";
-
-    cout << "\n=== COMPARACION ===\n";
-    double r = (1.0-(double)nodos_bt/nodos_fb)*100.0;
-    cout << "Backtracking: "<<nodos_bt<<" nodos | "<<formato_tiempo(ns_bt)<<"\n";
-    cout << "Fuerza Bruta: "<<nodos_fb<<" nodos | "<<formato_tiempo(ns_fb)<<"\n";
-    cout << fixed << setprecision(2)
-         << "Reduccion de nodos: " << r << "%\n";
-    return 0;
-}
-\end{lstlisting}
+Para compilar y ejecutar:
+\begin{verbatim}
+g++ -O2 -std=gnu++17 -o solucion main_ejercicio2.cpp
+./solucion
+\end{verbatim}
 
 % ===================================================================
 \section{Ejemplos de Entrada y Salida}
 
+Los siguientes ejemplos corresponden a ejecuciones reales del programa en
+modo benchmark (opcion 2). Los tiempos son el promedio de 100\,000
+repeticiones medidas con \texttt{high\_resolution\_clock} de precision
+en nanosegundos.
+
+% -------------------------------------------------------------------
 \subsection{Ejemplo 1 --- Ciclo C4 (n=4, k=3)}
 
 El ciclo $C_4$ es un cuadrado: 4 vertices donde cada uno esta conectado
-con sus dos vecinos inmediatos.  Su numero cromatico es $\chi(C_4)=2$
+con sus dos vecinos inmediatos. Su numero cromatico es $\chi(C_4)=2$
 (grafo bipartito), por lo que con $k=3$ existen muchas soluciones validas.
+Aristas: 0-1, 1-2, 2-3, 3-0.
 
 \begin{figure}[H]
 \centering
@@ -501,129 +317,197 @@ con sus dos vecinos inmediatos.  Su numero cromatico es $\chi(C_4)=2$
 \caption{Primera solucion para $C_4$: colores alternados 1-2-1-2.}
 \end{figure}
 
-\textbf{Entrada:}
+\textbf{Salida real del programa:}
 \begin{verbatim}
-4
-3
-0 1 0 1
-1 0 1 0
-0 1 0 1
-1 0 1 0
+=============================================
+           RESULTADO: BACKTRACKING
+=============================================
+  Coloraciones validas encontradas : 18
+  Primera solucion:
+    vertice 0  ->  color 1
+    vertice 1  ->  color 2
+    vertice 2  ->  color 1
+    vertice 3  ->  color 2
+  Nodos explorados    : 40
+  Tiempo de ejecucion : 0.1957 us  (promedio de 100000 repeticiones)
+
+=============================================
+           RESULTADO: FUERZA BRUTA
+=============================================
+  Combinaciones totales generadas  : 81  (3^4)
+  Coloraciones validas encontradas : 18
+  Tiempo de ejecucion : 1.8696 us  (promedio de 100000 repeticiones)
+
+=============================================
+            VERIFICACION CRUZADA
+=============================================
+  OK  Ambos enfoques coinciden: 18 coloraciones validas.
+
+=============================================
+         COMPARACION DE EFICIENCIA
+=============================================
+  Metodo            Nodos explorados   Tiempo [us]
+  Backtracking                    40   0.1957 us
+  Fuerza Bruta                    81   1.8696 us
+
+  La poda del backtracking elimino el 50.62% de los nodos.
 \end{verbatim}
 
-\textbf{Salida:}
+% -------------------------------------------------------------------
+\subsection{Ejemplo 2 --- Grafo completo K4 (n=4, k=4)}
+
+El grafo completo $K_4$ tiene todos sus vertices interconectados entre si
+($\chi(K_4)=4$). Con exactamente $k=4$ colores existe solucion: cualquier
+permutacion de los 4 colores asignados a los 4 vertices es valida, dando
+$4! = 24$ coloraciones. La alta densidad genera conflictos desde los primeros
+niveles, haciendo la poda mas efectiva que en $C_4$.
+
+\textbf{Salida real del programa:}
 \begin{verbatim}
-=== BACKTRACKING ===
-Total de coloraciones validas: 18
-Primera solucion:
-  vertice 0 -> color 1
-  vertice 1 -> color 2
-  vertice 2 -> color 1
-  vertice 3 -> color 2
-Nodos explorados: 40
-Tiempo: 2.0300 us
+=============================================
+           RESULTADO: BACKTRACKING
+=============================================
+  Coloraciones validas encontradas : 24
+  Primera solucion:
+    vertice 0  ->  color 1
+    vertice 1  ->  color 2
+    vertice 2  ->  color 3
+    vertice 3  ->  color 4
+  Nodos explorados    : 65
+  Tiempo de ejecucion : 0.4265 us  (promedio de 100000 repeticiones)
 
-=== FUERZA BRUTA ===
-Combinaciones generadas: 81 (3^4)
-Total de coloraciones validas: 18
-Tiempo: 3.0610 us
+=============================================
+           RESULTADO: FUERZA BRUTA
+=============================================
+  Combinaciones totales generadas  : 256  (4^4)
+  Coloraciones validas encontradas : 24
+  Tiempo de ejecucion : 5.5957 us  (promedio de 100000 repeticiones)
 
-=== VERIFICACION CRUZADA ===
-OK  Ambos: 18 coloraciones
+=============================================
+            VERIFICACION CRUZADA
+=============================================
+  OK  Ambos enfoques coinciden: 24 coloraciones validas.
 
-=== COMPARACION ===
-Backtracking: 40 nodos | 2.0300 us
-Fuerza Bruta: 81 nodos | 3.0610 us
-Reduccion de nodos: 50.62%
+=============================================
+         COMPARACION DE EFICIENCIA
+=============================================
+  Metodo            Nodos explorados   Tiempo [us]
+  Backtracking                    65   0.4265 us
+  Fuerza Bruta                   256   5.5957 us
+
+  La poda del backtracking elimino el 74.61% de los nodos.
 \end{verbatim}
 
-\subsection{Ejemplo 2 --- Triangulo K3 (n=3, k=2) --- Sin solucion}
+% -------------------------------------------------------------------
+\subsection{Ejemplo 3 --- Ciclo C7 con cuerdas (n=7, k=3) --- Sin solucion}
 
-El triangulo requiere al menos 3 colores ($\chi(K_3)=3$).  Con $k=2$
-el backtracking lo descubre rapidamente (solo 5 nodos), mientras que
-la fuerza bruta recorre todas las $2^3=8$ combinaciones antes de concluir.
+Este caso es el mas ilustrativo. El grafo consiste en un ciclo de 7 vertices
+($C_7$) con cuerdas internas adicionales (0-2, 1-3, 2-4, 3-5, 4-6), lo que
+aumenta considerablemente su densidad. El grafo no admite ninguna
+3-coloracion valida ($\chi > 3$). El backtracking detecta el conflicto desde
+los primeros niveles y descarta ramas enteras, explorando solo 34 nodos
+frente a las $3^7=2\,187$ combinaciones de la fuerza bruta, una reduccion
+del 98.45\%. La diferencia de tiempo es de \textbf{279x}.
 
-\textbf{Entrada:}
+\textbf{Salida real del programa:}
 \begin{verbatim}
-3
-2
-0 1 1
-1 0 1
-1 1 0
+=============================================
+           RESULTADO: BACKTRACKING
+=============================================
+  No existe una 3-coloracion valida para este grafo.
+  Nodos explorados    : 34
+  Tiempo de ejecucion : 0.2702 us  (promedio de 100000 repeticiones)
+
+=============================================
+           RESULTADO: FUERZA BRUTA
+=============================================
+  Combinaciones totales generadas  : 2187  (3^7)
+  Coloraciones validas encontradas : 0
+  Tiempo de ejecucion : 75.6029 us  (promedio de 100000 repeticiones)
+
+=============================================
+            VERIFICACION CRUZADA
+=============================================
+  OK  Ambos enfoques coinciden: 0 coloraciones validas.
+
+=============================================
+         COMPARACION DE EFICIENCIA
+=============================================
+  Metodo            Nodos explorados   Tiempo [us]
+  Backtracking                    34   0.2702 us
+  Fuerza Bruta                  2187   75.6029 us
+
+  La poda del backtracking elimino el 98.45% de los nodos.
 \end{verbatim}
 
-\textbf{Salida:}
+% -------------------------------------------------------------------
+\subsection{Ejemplo 4 --- Bipartito K2,3 (n=5, k=2)}
+
+El grafo bipartito $K_{2,3}$ tiene los vertices $\{0,1\}$ conectados con
+todos los de $\{2,3,4\}$, sin aristas dentro de cada grupo. Su numero
+cromatico es $\chi(K_{2,3})=2$, por lo que con $k=2$ existen exactamente
+2 coloraciones validas (asignar color 1 al grupo $\{0,1\}$ y color 2 al
+grupo $\{2,3,4\}$, o viceversa). El backtracking encuentra rapidamente la
+solucion y no necesita explorar muchas ramas.
+
+\textbf{Salida real del programa:}
 \begin{verbatim}
-=== BACKTRACKING ===
-No existe una 2-coloracion valida.
-Nodos explorados: 5
-Tiempo: 513.00 ns
+=============================================
+           RESULTADO: BACKTRACKING
+=============================================
+  Coloraciones validas encontradas : 2
+  Primera solucion:
+    vertice 0  ->  color 1
+    vertice 1  ->  color 1
+    vertice 2  ->  color 2
+    vertice 3  ->  color 2
+    vertice 4  ->  color 2
+  Nodos explorados    : 13
+  Tiempo de ejecucion : 0.0705 us  (promedio de 100000 repeticiones)
 
-=== FUERZA BRUTA ===
-Combinaciones generadas: 8 (2^3)
-Total de coloraciones validas: 0
-Tiempo: 563.00 ns
-\end{verbatim}
+=============================================
+           RESULTADO: FUERZA BRUTA
+=============================================
+  Combinaciones totales generadas  : 32  (2^5)
+  Coloraciones validas encontradas : 2
+  Tiempo de ejecucion : 0.7645 us  (promedio de 100000 repeticiones)
 
-\subsection{Ejemplo 3 --- Grafo completo K7 (n=7, k=4) --- Diferencia dramatica}
+=============================================
+            VERIFICACION CRUZADA
+=============================================
+  OK  Ambos enfoques coinciden: 2 coloraciones validas.
 
-Este caso ilustra de forma clara la ventaja del backtracking.
-El grafo $K_7$ tiene 7 vertices todos conectados entre si, por lo que
-$\chi(K_7)=7$ y con $k=4$ no existe ninguna coloracion valida.
-El backtracking lo determina explorando solo 65 nodos, mientras que la
-fuerza bruta genera las $4^7=16\,384$ combinaciones completas.
+=============================================
+         COMPARACION DE EFICIENCIA
+=============================================
+  Metodo            Nodos explorados   Tiempo [us]
+  Backtracking                    13   0.0705 us
+  Fuerza Bruta                    32   0.7645 us
 
-\textbf{Entrada:}
-\begin{verbatim}
-7
-4
-0 1 1 1 1 1 1
-1 0 1 1 1 1 1
-1 1 0 1 1 1 1
-1 1 1 0 1 1 1
-1 1 1 1 0 1 1
-1 1 1 1 1 0 1
-1 1 1 1 1 1 0
-\end{verbatim}
-
-\textbf{Salida:}
-\begin{verbatim}
-=== BACKTRACKING ===
-No existe una 4-coloracion valida.
-Nodos explorados: 65
-Tiempo: 5.2680 us
-
-=== FUERZA BRUTA ===
-Combinaciones generadas: 16384 (4^7)
-Total de coloraciones validas: 0
-Tiempo: 548.8720 us
-
-=== COMPARACION ===
-Backtracking:    65 nodos |   5.2680 us
-Fuerza Bruta: 16384 nodos | 548.8720 us
-Reduccion de nodos: 99.60%
+  La poda del backtracking elimino el 59.38% de los nodos.
 \end{verbatim}
 
 % ===================================================================
 \section{Comparacion de Tiempos de Ejecucion}
 
-Se midieron tres grafos con caracteristicas bien distintas para mostrar
-como varia el rendimiento segun la densidad y el tamano del grafo.
-Los tiempos se midieron en nanosegundos y se expresan en la unidad mas
-legible segun la magnitud.
+Se ejecutaron cuatro grafos con caracteristicas distintas. Los tiempos se
+obtuvieron promediando 100\,000 repeticiones por metodo para garantizar
+precision en operaciones sub-microsegundo, usando
+\texttt{high\_resolution\_clock} con resolucion de nanosegundos.
 
 \begin{table}[H]
 \centering
-\caption{Comparacion de nodos explorados y tiempos de ejecucion}
-\begin{tabular}{llrrrr}
+\caption{Comparacion de nodos explorados y tiempos de ejecucion (promedio de 100\,000 repeticiones)}
+\begin{tabular}{llrrrrc}
 \toprule
 \textbf{Grafo} & \textbf{n / k} &
 \textbf{Nodos BT} & \textbf{Nodos FB} &
-\textbf{T. BT} & \textbf{T. FB} \\
+\textbf{T. BT [us]} & \textbf{T. FB [us]} & \textbf{Poda} \\
 \midrule
-Ciclo $C_4$       & n=4, k=3 &    40 &    81 & 2.03 us  & 3.06 us \\
-Triangulo $K_3$   & n=3, k=3 &    16 &    27 & 1.07 us  & 1.21 us \\
-Completo $K_7$    & n=7, k=4 &    65 & 16384 & 5.27 us  & 548.87 us \\
+Ciclo $C_4$          & n=4, k=3 &   40 &   81  & 0.1957 & 1.8696 & 50.62\% \\
+Completo $K_4$       & n=4, k=4 &   65 &  256  & 0.4265 & 5.5957 & 74.61\% \\
+$C_7$ + cuerdas      & n=7, k=3 &   34 & 2187  & 0.2702 & 75.6029 & 98.45\% \\
+Bipartito $K_{2,3}$  & n=5, k=2 &   13 &   32  & 0.0705 & 0.7645  & 59.38\% \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -631,29 +515,40 @@ Completo $K_7$    & n=7, k=4 &    65 & 16384 & 5.27 us  & 548.87 us \\
 \textbf{Analisis de los resultados:}
 
 \begin{itemize}
-  \item En el ciclo $C_4$, el backtracking exploro 40 nodos frente a los 81 de
-        la fuerza bruta, una reduccion del \textbf{50.6\%}. Los tiempos son
-        del orden de microsegundos y bastante similares porque el grafo es
-        pequeno; la diferencia es mas visible en el conteo de nodos.
+  \item \textbf{Ciclo $C_4$ (n=4, k=3):} el backtracking exploro 40 nodos
+        frente a los 81 de la fuerza bruta (\textbf{50.62\% de poda}).
+        El tiempo de backtracking fue 0.1957~us contra 1.8696~us,
+        aproximadamente \textbf{9.5x} mas rapido. La diferencia es moderada
+        porque el grafo es pequeno y existen 18 soluciones validas, lo que
+        limita la poda.
 
-  \item En el triangulo $K_3$ con $k=3$, el backtracking exploro 16 nodos
-        frente a 27, una reduccion del \textbf{40.7\%}. Aqui la poda es
-        moderada porque hay soluciones: el backtracking encuentra rapidamente
-        ramas validas y no necesita podar tanto.
+  \item \textbf{Completo $K_4$ (n=4, k=4):} con todos los vertices
+        interconectados la restriccion aumenta. El backtracking exploro 65
+        nodos frente a 256 (\textbf{74.61\% de poda}), resultando en
+        0.4265~us contra 5.5957~us, una mejora de \textbf{13.1x}. La mayor
+        densidad del grafo genera conflictos mas temprano, haciendo la poda
+        mas efectiva.
 
-  \item El caso mas revelador es $K_7$ con $k=4$, donde no existe ninguna
-        solucion valida ($\chi(K_7)=7>4$). El backtracking exploro apenas
-        \textbf{65 nodos} porque detecta el conflicto desde los primeros
-        niveles y poda el arbol agresivamente. La fuerza bruta, en cambio,
-        genero las $4^7=\mathbf{16\,384}$ combinaciones completas sin ningun
-        atajo, resultando en una reduccion del \textbf{99.6\%} de nodos y
-        una diferencia de tiempo de mas de \textbf{100x}
-        (5.27 us vs 548.87 us).
+  \item \textbf{$C_7$ + cuerdas (n=7, k=3):} este es el caso mas
+        ilustrativo. El grafo no admite ninguna 3-coloracion valida
+        ($\chi > 3$), por lo que el backtracking detecta el conflicto desde
+        los primeros niveles y corta ramas enteras. Solo exploro \textbf{34
+        nodos} mientras la fuerza bruta evaluo las $3^7=\mathbf{2\,187}$
+        combinaciones completas (\textbf{98.45\% de poda}). En tiempo:
+        0.2702~us contra 75.6029~us, una diferencia de \textbf{279x}.
+
+  \item \textbf{Bipartito $K_{2,3}$ (n=5, k=2):} grafo 2-coloreable donde
+        existe solucion minima. El backtracking exploro 13 nodos frente a 32
+        (\textbf{59.38\% de poda}), con tiempos de 0.0705~us contra
+        0.7645~us (\textbf{10.8x} mas rapido). Al ser un grafo bipartito con
+        pocos colores, la poda actua desde los primeros vertices.
 \end{itemize}
 
-Este comportamiento es consistente con la teoria: cuanto mas denso es el
-grafo y mas restrictivo es el problema (pocos colores, muchas aristas),
-mayor es el efecto de la poda del backtracking.
+En todos los casos el backtracking supera a la fuerza bruta. La ventaja
+crece con la densidad del grafo y con la ausencia de soluciones: cuando no
+existe ninguna $k$-coloracion valida, el backtracking puede descartar el
+espacio de busqueda casi por completo, mientras la fuerza bruta siempre
+recorre las $k^n$ combinaciones sin atajo.
 
 % ===================================================================
 \section{Analisis de Complejidad}
@@ -791,29 +686,31 @@ $k = 1, 2, 3, \ldots$ e informando el primer $k$ para el que
 
 \begin{enumerate}
   \item El backtracking y la fuerza bruta producen el mismo numero de
-        coloraciones validas, confirmado por la verificacion cruzada en todos
-        los casos probados.
+        coloraciones validas en todos los casos, confirmado por la verificacion
+        cruzada.
 
-  \item El backtracking es significativamente mas eficiente gracias a la poda:
-        redujo los nodos explorados un 50.6\% en $C_4$, un 40.7\% en $K_3$
-        y un 99.6\% en $K_7$. La ventaja crece con la densidad del grafo.
+  \item El backtracking fue mas eficiente en todos los grafos probados.
+        La reduccion de nodos explorados oscilo entre el \textbf{50.62\%}
+        (ciclo $C_4$, grafo disperso con soluciones) y el \textbf{98.45\%}
+        ($C_7$+cuerdas, grafo denso sin solucion). En terminos de tiempo,
+        la mejora vario entre \textbf{9.5x} y \textbf{279x}.
 
-  \item Cuando el grafo no tiene aristas el backtracking no puede podar
-        ninguna rama y su rendimiento es identico al de la fuerza bruta.
+  \item La poda es mas efectiva cuando el grafo es denso y no existe
+        solucion valida: el backtracking detecta conflictos desde los
+        primeros niveles y descarta ramas enteras, mientras la fuerza bruta
+        siempre recorre las $k^n$ combinaciones completas.
 
-  \item La medicion de tiempos en nanosegundos con escalado automatico de
-        unidad (ns/us/ms/s) es fundamental para comparar algoritmos sobre
-        instancias pequenas, donde los tiempos en milisegundos simplemente
-        muestran cero.
+  \item La medicion por promedio de 100\,000 repeticiones es necesaria para
+        grafos pequenos: una sola ejecucion puede retornar 0 debido a la
+        resolucion del reloj, ocultando diferencias reales entre algoritmos.
 
-  \item La complejidad peor caso de ambos enfoques es exponencial en $n$,
-        por lo que su uso practico se limita a grafos de pocos vertices.
-        Para instancias grandes existen heuristicas y algoritmos de
-        aproximacion mas apropiados.
+  \item Ambos enfoques tienen complejidad exponencial en $n$, por lo que
+        su uso practico se limita a grafos de pocos vertices. Para instancias
+        grandes existen heuristicas y algoritmos de aproximacion mas adecuados.
 
-  \item La relacion entre la $k$-coloracion y el numero cromatico $\chi(G)$
-        permite usar el algoritmo para encontrar la cantidad minima de colores
-        necesaria para colorear cualquier grafo.
+  \item El algoritmo desarrollado puede calcular el numero cromatico
+        $\chi(G)$ ejecutandose para $k=1,2,3,\ldots$ hasta encontrar la
+        primera $k$ con al menos una coloracion valida.
 \end{enumerate}
 
 % ===================================================================
