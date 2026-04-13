@@ -189,3 +189,7 @@ g++ -std=gnu++17 -O2 -o coloracion main_ejercicio2.cpp
 - El trabajo evidencia la diferencia práctica entre explorar todo el espacio y podar soluciones inviables de forma temprana.
 - Fuerza bruta es útil como baseline de verificación, pero backtracking mejora significativamente el rendimiento en problemas con restricciones.
 - La comparación experimental de conteo de nodos y tiempos permite justificar el uso de técnicas más inteligentes de búsqueda.
+
+## 🤖 Uso de IA como apoyo
+
+Durante la realización de este proyecto se utilizó inteligencia artificial como herramienta de apoyo para el aprendizaje. Se empleó como guía para resolver dudas puntuales, aclarar conceptos del curso y comprender con mayor profundidad los problemas planteados. Este acompañamiento facilitó la construcción de una solución mejor fundamentada desde el punto de vista algorítmico, sin reemplazar el análisis y el trabajo propio del equipo.
