@@ -206,41 +206,36 @@ Los datos siguientes corresponden a la opción 2 del programa
 
 \subsection{Caso 1: Ciclo \(C_4\) con \(k=3\)}
 
+Conexiones del grafo (aristas): \((0,1), (1,2), (2,3), (3,0)\).
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5]{Caso_1.png}
+  \label{fig:caso1}
+\end{figure}
+
 En este caso sí existen múltiples coloraciones válidas. Backtracking encuentra
 18 soluciones, explora 40 nodos y la primera asignación reportada por el
 programa es \(1,2,1,2\). Fuerza bruta también encuentra 18 soluciones, pero
 recorre las 81 combinaciones posibles.
 
-Conexiones del grafo (aristas): \((0,1), (1,2), (2,3), (3,0)\).
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[scale=0.55]{Salidas/Caso_1.png}
-  \caption{Salida de consola del Caso 1 (Ciclo \(C_4\), \(k=3\)).}
-  \label{fig:caso1}
-\end{figure}
 
 \subsection{Caso 2: Grafo completo \(K_4\) con \(k=4\)}
-
-Al ser un grafo denso, las restricciones aparecen muy temprano. Backtracking
-reporta 24 coloraciones válidas y explora 65 nodos, mientras que fuerza bruta
-debe evaluar 256 combinaciones. La primera solución mostrada por el programa es
-\(1,2,3,4\).
 
 Conexiones del grafo (aristas): \((0,1), (0,2), (0,3), (1,2), (1,3), (2,3)\).
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.55]{Salidas/Caso_2.png}
-  \caption{Salida de consola del Caso 2 (Completo \(K_4\), \(k=4\)).}
+  \includegraphics[scale=0.5]{Caso_2.png}
   \label{fig:caso2}
 \end{figure}
 
+Al ser un grafo denso, las restricciones aparecen muy temprano. Backtracking
+reporta 24 coloraciones válidas y explora 65 nodos, mientras que fuerza bruta
+debe evaluar 256 combinaciones. La primera solución mostrada por el programa es
+\(1,2,3,4\).
 \subsection{Caso 3: \(C_7\) con cuerdas y \(k=3\)}
-
-Este caso no tiene 3-coloración válida. Backtracking detecta conflictos y poda
-rápidamente, por eso solo explora 34 nodos. En contraste, fuerza bruta revisa
-las 2187 combinaciones y confirma también que el total de soluciones es 0.
 
 Conexiones del grafo (aristas): ciclo
 \((0,1), (1,2), (2,3), (3,4), (4,5), (5,6), (6,0)\)
@@ -249,26 +244,32 @@ y cuerdas internas
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.55]{Salidas/Caso_3.png}
-  \caption{Salida de consola del Caso 3 (\(C_7\) con cuerdas, \(k=3\)).}
+  \includegraphics[scale=0.49]{Caso_3.png}
   \label{fig:caso3}
 \end{figure}
 
-\subsection{Caso 4: Bipartito \(K_{2,3}\) con \(k=2\)}
+Este caso no tiene 3-coloración válida. Backtracking detecta conflictos y poda
+rápidamente, por eso solo explora 34 nodos. En contraste, fuerza bruta revisa
+las 2187 combinaciones y confirma también que el total de soluciones es 0.
 
-El grafo sí es 2-coloreable y el programa encuentra 2 coloraciones válidas.
-Backtracking explora 13 nodos y entrega como primera solución
-\(1,1,2,2,2\). Fuerza bruta valida el mismo total con 32 combinaciones.
+
+
+\subsection{Caso 4: Bipartito \(K_{2,3}\) con \(k=2\)}
 
 Conexiones del grafo (aristas): \((0,2), (0,3), (0,4), (1,2), (1,3), (1,4)\).
 Equivalente a una bipartición \(\{0,1\}\) y \(\{2,3,4\}\).
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.55]{Salidas/Caso_4.png}
-  \caption{Salida de consola del Caso 4 (Bipartito \(K_{2,3}\), \(k=2\)).}
+  \includegraphics[scale=0.5]{Caso_4.png}
   \label{fig:caso4}
 \end{figure}
+
+El grafo sí es 2-coloreable y el programa encuentra 2 coloraciones válidas.
+Backtracking explora 13 nodos y entrega como primera solución
+\(1,1,2,2,2\). Fuerza bruta valida el mismo total con 32 combinaciones.
+
+
 
 \subsection{Resumen comparativo}
 
